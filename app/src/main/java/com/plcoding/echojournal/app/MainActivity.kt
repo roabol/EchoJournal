@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.plcoding.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
+import com.plcoding.echojournal.echos.presentation.echos.EchosRoot
 
 class MainActivity : ComponentActivity() {
 
@@ -17,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             EchoJournalTheme {
-
+                EchosRoot()
             }
         }
     }

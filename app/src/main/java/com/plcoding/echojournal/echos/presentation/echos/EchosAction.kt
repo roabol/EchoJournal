@@ -18,4 +18,5 @@ sealed interface EchosAction {
     data class OnTrackSizeAvailable(val trackSizeInfo: TrackSizeInfo): EchosAction
     data class OnRemoveFilters(val filterType: EchoFilterChip): EchosAction
     data class OnPlayEchoClick(val echoId: Int): EchosAction
+    data object OnAudioPermissionGranted: EchosAction
 }
