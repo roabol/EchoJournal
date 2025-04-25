@@ -185,7 +185,7 @@ class EchosViewModel(
             if(recordingDetails.duration < MIN_RECORD_DURATION) {
                 eventChannel.send(EchosEvent.RecordingTooShort)
             } else {
-                eventChannel.send(EchosEvent.OnDoneRecording)
+                eventChannel.send(EchosEvent.OnDoneRecording(recordingDetails))
             }
         }
     }

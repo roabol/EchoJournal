@@ -27,6 +27,7 @@ import com.plcoding.echojournal.core.presentation.designsystem.theme.EchoJournal
 import com.plcoding.echojournal.core.presentation.designsystem.theme.bgGradient
 import com.plcoding.echojournal.core.presentation.util.ObserveAsEvents
 import com.plcoding.echojournal.core.presentation.util.isAppInForeground
+import com.plcoding.echojournal.echos.domain.recording.RecordingDetails
 import com.plcoding.echojournal.echos.presentation.echos.components.EchoFilterRow
 import com.plcoding.echojournal.echos.presentation.echos.components.EchoList
 import com.plcoding.echojournal.echos.presentation.echos.components.EchoQuickRecordFloatingActionButton
@@ -40,6 +41,7 @@ import timber.log.Timber
 
 @Composable
 fun EchosRoot(
+    onNavigateToCreateEcho: (RecordingDetails) -> Unit,
     viewModel: EchosViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -66,7 +68,7 @@ fun EchosRoot(
                 ).show()
             }
             is EchosEvent.OnDoneRecording -> {
-                Timber.d("Recording successful!")
+                onNavigateToCreateEcho(event.details)
             }
         }
     }
