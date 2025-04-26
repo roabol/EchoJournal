@@ -57,11 +57,13 @@ import com.plcoding.echojournal.core.presentation.designsystem.theme.EchoJournal
 import com.plcoding.echojournal.core.presentation.designsystem.theme.secondary70
 import com.plcoding.echojournal.core.presentation.designsystem.theme.secondary95
 import com.plcoding.echojournal.echos.presentation.components.EchoMoodPlayer
+import com.plcoding.echojournal.echos.presentation.create_echo.components.SelectMoodSheet
 import com.plcoding.echojournal.echos.presentation.models.MoodUi
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateEchoRoot(
-    viewModel: CreateEchoViewModel = viewModel()
+    viewModel: CreateEchoViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -254,6 +256,21 @@ fun CreateEchoScreen(
                     }
                 )
             }
+        }
+
+        if(state.showMoodSelector) {
+            SelectMoodSheet(
+                selectedMood = state.selectedMood,
+                onMoodClick = {
+                    onAction(CreateEchoAction.OnMoodClick(it))
+                },
+                onDismiss = {
+                    onAction(CreateEchoAction.OnDismissMoodSelector)
+                },
+                onConfirmClick = {
+                    onAction(CreateEchoAction.OnConfirmMood)
+                }
+            )
         }
     }
 }
