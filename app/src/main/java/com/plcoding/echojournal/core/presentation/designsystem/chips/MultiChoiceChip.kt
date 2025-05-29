@@ -118,19 +118,19 @@ fun MultiChoiceChip(
 private fun MultiChoiceChipPreview() {
     EchoJournalTheme {
         MultiChoiceChip(
-            displayText = "Hello world!",
+            displayText = "All topics",
             onClick = {},
             isClearVisible = true,
             onClearButtonClick = {},
-            isHighlighted = true,
+            isHighlighted = false,
             isDropDownVisible = true,
             dropDownMenu = {},
-            leadingContent = {
-                Icon(
-                    imageVector = Icons.Default.Build,
-                    contentDescription = null
-                )
-            }
+//            leadingContent = {
+//                Icon(
+//                    imageVector = Icons.Default.Build,
+//                    contentDescription = null
+//                )
+//            }
         )
     }
 }

@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.plcoding.echojournal.R
-import com.plcoding.echojournal.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnSelectedItems
 import com.plcoding.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
 
 @Composable
@@ -43,7 +42,7 @@ fun <T> SelectableDropDownOptionsMenu(
     key: (T) -> Any,
     onItemClick: (Selectable<T>) -> Unit,
     modifier: Modifier = Modifier,
-    leadingIcon: (@Composable () -> Unit)? = null,
+    leadingIcon: (@Composable (T) -> Unit)? = null,
     dropDownOffset: IntOffset = IntOffset.Zero,
     maxDropDownHeight: Dp = Dp.Unspecified,
     dropDownExtras: SelectableOptionsExtras? = null,
@@ -67,7 +66,7 @@ fun <T> SelectableDropDownOptionsMenu(
             LazyColumn(
                 modifier = Modifier
                     .animateContentSize()
-                    .padding(16.dp),
+                    .padding(6.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(
@@ -93,7 +92,7 @@ fun <T> SelectableDropDownOptionsMenu(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        leadingIcon?.invoke()
+                        leadingIcon?.invoke(selectable.item)
                         Text(
                             text = itemDisplayText(selectable.item),
                             modifier = Modifier.weight(1f)
