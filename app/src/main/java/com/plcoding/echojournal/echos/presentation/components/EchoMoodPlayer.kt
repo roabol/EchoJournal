@@ -1,6 +1,5 @@
 package com.plcoding.echojournal.echos.presentation.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,6 +24,7 @@ import com.plcoding.echojournal.core.presentation.designsystem.theme.MoodPrimary
 import com.plcoding.echojournal.core.presentation.designsystem.theme.MoodPrimary80
 import com.plcoding.echojournal.core.presentation.util.formatMMSS
 import com.plcoding.echojournal.echos.presentation.echos.models.PlaybackState
+import com.plcoding.echojournal.echos.presentation.echos.models.TrackSizeInfo
 import com.plcoding.echojournal.echos.presentation.models.MoodUi
 import kotlin.random.Random
 import kotlin.time.Duration
@@ -34,12 +34,13 @@ import kotlin.time.Duration.Companion.seconds
 fun EchoMoodPlayer(
     moodUi: MoodUi?,
     playbackState: PlaybackState,
-    playbackProgress: () -> Float,
+    playerProgress: () -> Float,
     durationPlayed: Duration,
     totalPlaybackDuration: Duration,
     powerRatios: List<Float>,
     onPlayClick: () -> Unit,
     onPauseClick: () -> Unit,
+    onTrackSizeAvailable: (TrackSizeInfo) -> Unit,
     modifier: Modifier = Modifier,
     amplitudeBarWith: Dp = 5.dp,
     amplitudeBarSpacing: Dp = 4.dp,
@@ -93,7 +94,7 @@ fun EchoMoodPlayer(
                 powerRatios = powerRatios,
                 trackColor = trackColor,
                 trackFillColor = trackFillColor,
-                playerProgress = playbackProgress,
+                playerProgress = playerProgress,
                 modifier = modifier
                     .weight(1f)
                     .padding(
@@ -124,13 +125,14 @@ private fun EchoMoodPlayerPreview() {
 
         EchoMoodPlayer(
             moodUi = MoodUi.STRESSED,
-            playbackProgress = { 0.3f },
+            playerProgress = { 0.3f },
             playbackState = PlaybackState.PAUSED,
             durationPlayed = 125.seconds,
             totalPlaybackDuration = 250.seconds,
             powerRatios = ratios,
             onPlayClick = {},
             onPauseClick = {},
+            onTrackSizeAvailable = {},
             modifier = Modifier
                 .fillMaxWidth()
         )

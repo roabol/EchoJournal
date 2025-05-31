@@ -73,7 +73,7 @@ enum class MoodUi(
         ),
         title = UiText.StringResource(R.string.peaceful)
     ),
-    EXITED(
+    EXCITED(
         iconSet = MoodIconSet(
             fill = R.drawable.emoji_excited,
             outline = R.drawable.emoji_excited_outline
