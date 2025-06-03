@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.plcoding.echojournal.R
+import com.plcoding.echojournal.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnselectedItems
 import com.plcoding.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
 
 @Composable
@@ -45,11 +46,11 @@ fun <T> SelectableDropDownOptionsMenu(
     leadingIcon: (@Composable (T) -> Unit)? = null,
     dropDownOffset: IntOffset = IntOffset.Zero,
     maxDropDownHeight: Dp = Dp.Unspecified,
-    dropDownExtras: SelectableOptionsExtras? = null,
+    dropDownExtras: SelectableOptionExtras? = null
 ) {
     Popup(
         onDismissRequest = onDismiss,
-        offset = dropDownOffset,
+        offset = dropDownOffset
     ) {
         Surface(
             color = MaterialTheme.colorScheme.surface,
@@ -79,11 +80,9 @@ fun <T> SelectableDropDownOptionsMenu(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
                             .background(
-                                color = if (selectable.selected) {
+                                color = if(selectable.selected) {
                                     MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.05f)
-                                } else {
-                                    MaterialTheme.colorScheme.surface
-                                }
+                                } else MaterialTheme.colorScheme.surface
                             )
                             .clickable {
                                 onItemClick(selectable)
@@ -97,7 +96,7 @@ fun <T> SelectableDropDownOptionsMenu(
                             text = itemDisplayText(selectable.item),
                             modifier = Modifier.weight(1f)
                         )
-                        if (selectable.selected) {
+                        if(selectable.selected) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null,
@@ -106,7 +105,7 @@ fun <T> SelectableDropDownOptionsMenu(
                         }
                     }
                 }
-                if (dropDownExtras != null && dropDownExtras.text.isNotEmpty()) {
+                if(dropDownExtras != null && dropDownExtras.text.isNotEmpty()) {
                     item(key = true) {
                         Row(
                             modifier = Modifier
@@ -127,9 +126,7 @@ fun <T> SelectableDropDownOptionsMenu(
                                     .size(18.dp)
                             )
                             Text(
-                                text = stringResource(
-                                    R.string.create_new_entry, dropDownExtras.text
-                                ),
+                                text = stringResource(R.string.create_entry, dropDownExtras.text),
                                 modifier = Modifier.weight(1f),
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -160,9 +157,9 @@ private fun SelectableDropDownOptionsMenuPreview() {
                     selected = true
                 ),
             ),
+            key = { it },
             itemDisplayText = { it },
             onDismiss = {},
-            key = { it },
             onItemClick = {},
             leadingIcon = {
                 Icon(
@@ -171,10 +168,6 @@ private fun SelectableDropDownOptionsMenuPreview() {
                 )
             },
             maxDropDownHeight = 500.dp,
-            dropDownExtras = SelectableOptionsExtras(
-                text = "Add topic",
-                onClick = {}
-            )
         )
     }
 }

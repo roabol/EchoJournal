@@ -5,7 +5,7 @@ data class Selectable<T>(
     val selected: Boolean
 ) {
     companion object {
-        fun <T> List<T>.asUnSelectedItems(): List<Selectable<T>> {
+        fun <T> List<T>.asUnselectedItems(): List<Selectable<T>> {
             return map {
                 Selectable(
                     item = it,

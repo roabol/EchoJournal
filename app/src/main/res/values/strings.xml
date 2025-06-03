@@ -45,11 +45,12 @@
     <string name="you_don_t_have_any_topics_yet">You don\'t have any topics yet!</string>
     <string name="audio_recording_was_too_short">Audio recording was too short</string>
     <string name="clear_selections">Clear selections</string>
-    <string name="create_new_entry">Create \'%s\'</string>
+    <string name="create_entry">Create \'%s\'</string>
     <string name="playing">Playing</string>
     <string name="paused">paused</string>
     <string name="stopped">Stopped</string>
     <string name="pause_recording">Pause recording</string>
     <string name="finish_recording">Finish recording</string>
     <string name="resume_recording">Resume recording</string>
+    <string name="remove_topic">Remove topic %s</string>
 </resources>

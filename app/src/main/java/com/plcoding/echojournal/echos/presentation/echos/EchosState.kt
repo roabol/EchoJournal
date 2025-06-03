@@ -2,7 +2,7 @@ package com.plcoding.echojournal.echos.presentation.echos
 
 import com.plcoding.echojournal.R
 import com.plcoding.echojournal.core.presentation.designsystem.dropdowns.Selectable
-import com.plcoding.echojournal.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnSelectedItems
+import com.plcoding.echojournal.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnselectedItems
 import com.plcoding.echojournal.core.presentation.util.UiText
 import com.plcoding.echojournal.echos.presentation.echos.models.AudioCaptureMethod
 import com.plcoding.echojournal.echos.presentation.echos.models.EchoDaySection
@@ -25,7 +25,7 @@ data class EchosState(
     val isLoadingData: Boolean = false,
     val recordingState: RecordingState = RecordingState.NOT_RECORDING,
     val moods: List<Selectable<MoodUi>> = emptyList(),
-    val topics: List<Selectable<String>> = listOf("love", "Happy", "work").asUnSelectedItems(),
+    val topics: List<Selectable<String>> = listOf("love", "Happy", "work").asUnselectedItems(),
     val moodChipContent: MoodChipContent = MoodChipContent(),
     val selectedEchoFilterChip: EchoFilterChip? = null,
     val topicChipTitle: UiText = UiText.StringResource(R.string.all_topics)
