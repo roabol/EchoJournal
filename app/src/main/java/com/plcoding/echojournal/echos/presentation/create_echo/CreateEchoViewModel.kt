@@ -39,12 +39,10 @@ class CreateEchoViewModel : ViewModel() {
     fun onAction(action: CreateEchoAction) {
         when (action) {
             is CreateEchoAction.OnAddTopicTextChange -> onAddTopicTextChange(action.text)
-            CreateEchoAction.OnCancelClick -> TODO()
             CreateEchoAction.OnConfirmMood -> onConfirmMood()
             CreateEchoAction.OnDismissMoodSelector -> onDismissMoodSelector()
             CreateEchoAction.OnDismissTopicSuggestions -> onDismissTopicSuggestions()
             is CreateEchoAction.OnMoodClick -> onMoodClick(action.moodUi)
-            CreateEchoAction.OnNavigateBackClick -> TODO()
             is CreateEchoAction.OnNoteTextChange -> TODO()
             CreateEchoAction.OnPauseAudioClick -> TODO()
             CreateEchoAction.OnPlayAudioClick -> TODO()
@@ -54,6 +52,26 @@ class CreateEchoViewModel : ViewModel() {
             is CreateEchoAction.OnTopicClick -> onTopicClick(action.topic)
             is CreateEchoAction.OnTrackSizeAvailable -> TODO()
             CreateEchoAction.OnSelectMoodClick -> onSelectMoodClick()
+            CreateEchoAction.OnDismissConfirmLeaveDialog -> onDismissConfirmLeaveDialog()
+            CreateEchoAction.OnCancelClick,
+            CreateEchoAction.OnNavigateBackClick,
+            CreateEchoAction.OnGoBack -> onShowConfirmLeaveDialog()
+        }
+    }
+
+    private fun onShowConfirmLeaveDialog() {
+        _state.update {
+            it.copy(
+                showConfirmLeaveDialog = true
+            )
+        }
+    }
+
+    private fun onDismissConfirmLeaveDialog() {
+        _state.update {
+            it.copy(
+                showConfirmLeaveDialog = false
+            )
         }
     }
 
@@ -102,11 +120,13 @@ class CreateEchoViewModel : ViewModel() {
     }
 
     private fun onAddTopicTextChange(text: String) {
-        _state.update { it.copy(
-            addTopicText = text.filter {
-                it.isLetterOrDigit()
-            }
-        ) }
+        _state.update {
+            it.copy(
+                addTopicText = text.filter {
+                    it.isLetterOrDigit()
+                }
+            )
+        }
     }
 
     private fun onConfirmMood() {
