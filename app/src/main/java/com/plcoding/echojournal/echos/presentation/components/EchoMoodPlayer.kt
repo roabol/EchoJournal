@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -42,32 +44,29 @@ fun EchoMoodPlayer(
     onPauseClick: () -> Unit,
     onTrackSizeAvailable: (TrackSizeInfo) -> Unit,
     modifier: Modifier = Modifier,
-    amplitudeBarWith: Dp = 5.dp,
+    amplitudeBarWidth: Dp = 5.dp,
     amplitudeBarSpacing: Dp = 4.dp,
 ) {
     val iconTint = when (moodUi) {
         null -> MoodPrimary80
         else -> moodUi.colorSet.vivid
-
     }
     val trackFillColor = when (moodUi) {
         null -> MoodPrimary80
         else -> moodUi.colorSet.vivid
-
     }
     val backgroundColor = when (moodUi) {
         null -> MoodPrimary25
         else -> moodUi.colorSet.faded
-
     }
     val trackColor = when (moodUi) {
         null -> MoodPrimary35
         else -> moodUi.colorSet.desaturated
-
     }
     val formattedDurationText = remember(durationPlayed, totalPlaybackDuration) {
         "${durationPlayed.formatMMSS()}/${totalPlaybackDuration.formatMMSS()}"
     }
+    val density = LocalDensity.current
 
     Surface(
         shape = CircleShape,
@@ -77,7 +76,7 @@ fun EchoMoodPlayer(
         Row(
             modifier = Modifier
                 .height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             EchoPlaybackButton(
                 playbackState = playbackState,
@@ -89,19 +88,30 @@ fun EchoMoodPlayer(
                 )
             )
             EchoPlayBar(
-                amplitudeBarWith = amplitudeBarWith,
+                amplitudeBarWidth = amplitudeBarWidth,
                 amplitudeBarSpacing = amplitudeBarSpacing,
                 powerRatios = powerRatios,
                 trackColor = trackColor,
                 trackFillColor = trackFillColor,
                 playerProgress = playerProgress,
-                modifier = modifier
+                modifier = Modifier
                     .weight(1f)
                     .padding(
                         vertical = 10.dp,
                         horizontal = 8.dp
                     )
                     .fillMaxHeight()
+                    .onSizeChanged {
+                        if (it.width > 0) {
+                            onTrackSizeAvailable(
+                                TrackSizeInfo(
+                                    trackWidth = it.width.toFloat(),
+                                    barWidth = with(density) { amplitudeBarWidth.toPx() },
+                                    spacing = with(density) { amplitudeBarSpacing.toPx() }
+                                )
+                            )
+                        }
+                    }
             )
             Text(
                 text = formattedDurationText,
@@ -122,7 +132,6 @@ private fun EchoMoodPlayerPreview() {
                 Random.nextFloat()
             }
         }
-
         EchoMoodPlayer(
             moodUi = MoodUi.STRESSED,
             playerProgress = { 0.3f },
@@ -130,11 +139,11 @@ private fun EchoMoodPlayerPreview() {
             durationPlayed = 125.seconds,
             totalPlaybackDuration = 250.seconds,
             powerRatios = ratios,
-            onPlayClick = {},
             onPauseClick = {},
-            onTrackSizeAvailable = {},
+            onPlayClick = {},
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            onTrackSizeAvailable = {}
         )
     }
 }

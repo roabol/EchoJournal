@@ -23,7 +23,7 @@ import kotlin.random.Random
 
 @Composable
 fun EchoPlayBar(
-    amplitudeBarWith: Dp,
+    amplitudeBarWidth: Dp,
     amplitudeBarSpacing: Dp,
     powerRatios: List<Float>,
     trackColor: Color,
@@ -34,7 +34,7 @@ fun EchoPlayBar(
     Canvas(
         modifier = modifier
     ) {
-        val amplitudeBarWithPx = amplitudeBarWith.toPx()
+        val amplitudeBarWidthPx = amplitudeBarWidth.toPx()
         val amplitudeBarSpacingPx = amplitudeBarSpacing.toPx()
 
         val clipPath = Path()
@@ -42,7 +42,7 @@ fun EchoPlayBar(
         powerRatios.forEachIndexed { i, ratio ->
             val height = ratio * size.height
 
-            val xOffset = i * (amplitudeBarSpacingPx + amplitudeBarWithPx)
+            val xOffset = i * (amplitudeBarSpacingPx + amplitudeBarWidthPx)
             val yTopStart = center.y - height / 2f
 
             val topLeft = Offset(
@@ -50,7 +50,7 @@ fun EchoPlayBar(
                 y = yTopStart
             )
             val rectSize = Size(
-                width = amplitudeBarWithPx,
+                width = amplitudeBarWidthPx,
                 height = height
             )
             val roundRect = RoundRect(
@@ -93,7 +93,7 @@ private fun EchoPlayBarPreview() {
         }
         EchoPlayBar(
             amplitudeBarSpacing = 3.dp,
-            amplitudeBarWith = 4.dp,
+            amplitudeBarWidth = 4.dp,
             powerRatios = ratios,
             trackColor = MoodUi.SAD.colorSet.desaturated,
             trackFillColor = MoodUi.SAD.colorSet.vivid,
@@ -102,6 +102,5 @@ private fun EchoPlayBarPreview() {
                 .fillMaxWidth()
                 .height(50.dp)
         )
-
     }
 }

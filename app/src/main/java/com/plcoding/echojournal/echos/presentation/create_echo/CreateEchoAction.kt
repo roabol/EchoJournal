@@ -18,7 +18,7 @@ sealed interface CreateEchoAction {
     data object OnSaveClick : CreateEchoAction
     data object OnPlayAudioClick : CreateEchoAction
     data object OnPauseAudioClick : CreateEchoAction
-    data class OnTrackSizeAvailable(val trackSize: TrackSizeInfo) : CreateEchoAction
+    data class OnTrackSizeAvailable(val trackSizeInfo: TrackSizeInfo) : CreateEchoAction
     data class OnRemoveTopicClick(val topic: String) : CreateEchoAction
     data object OnGoBack : CreateEchoAction
     data object OnDismissConfirmLeaveDialog : CreateEchoAction
