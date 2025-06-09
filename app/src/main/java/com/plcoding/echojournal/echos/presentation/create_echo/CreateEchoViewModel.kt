@@ -13,6 +13,7 @@ import com.plcoding.echojournal.echos.domain.echo.Echo
 import com.plcoding.echojournal.echos.domain.echo.EchoDataSource
 import com.plcoding.echojournal.echos.domain.echo.Mood
 import com.plcoding.echojournal.echos.domain.recording.RecordingStorage
+import com.plcoding.echojournal.echos.domain.settings.SettingsPreferences
 import com.plcoding.echojournal.echos.presentation.echos.models.PlaybackState
 import com.plcoding.echojournal.echos.presentation.echos.models.TrackSizeInfo
 import com.plcoding.echojournal.echos.presentation.models.MoodUi
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -42,7 +44,8 @@ class CreateEchoViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val recordingStorage: RecordingStorage,
     private val audioPlayer: AudioPlayer,
-    private val echoDataSource: EchoDataSource
+    private val echoDataSource: EchoDataSource,
+    private val settingsPreferences: SettingsPreferences
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -71,6 +74,7 @@ class CreateEchoViewModel(
         .onStart {
             if (!hasLoadedInitialData) {
                 observeAddTopicText()
+                fetchDefaultSettings()
                 hasLoadedInitialData = true
             }
         }
@@ -110,6 +114,28 @@ class CreateEchoViewModel(
             CreateEchoAction.OnNavigateBackClick,
             CreateEchoAction.OnGoBack -> onShowConfirmLeaveDialog()
         }
+    }
+
+    private fun fetchDefaultSettings() {
+        settingsPreferences
+            .observeDefaultMood()
+            .take(1)
+            .onEach { defaultMood ->
+                _state.update { it.copy(
+                    selectedMood = MoodUi.valueOf(defaultMood.name)
+                ) }
+            }
+            .launchIn(viewModelScope)
+
+        settingsPreferences
+            .observeDefaultTopics()
+            .take(1)
+            .onEach { defaultTopics ->
+                _state.update { it.copy(
+                    topics = defaultTopics
+                ) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun onNoteTextChange(text: String) {
