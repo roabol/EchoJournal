@@ -176,12 +176,12 @@ fun EchosScreen(
                         onPlayClick = {
                             onAction(EchosAction.OnPlayEchoClick(it))
                         },
+                        onPauseClick = {
+                            onAction(EchosAction.OnPauseAudioClick)
+                        },
                         onTrackSizeAvailable = { trackSize ->
                             onAction(EchosAction.OnTrackSizeAvailable(trackSize))
-                        },
-                        onPauseClick = {
-                            onAction(EchosAction.OnPauseRecordingClick)
-                        },
+                        }
                     )
                 }
             }
