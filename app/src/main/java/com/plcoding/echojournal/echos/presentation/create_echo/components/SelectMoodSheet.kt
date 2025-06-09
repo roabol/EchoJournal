@@ -33,6 +33,7 @@ import com.plcoding.echojournal.R
 import com.plcoding.echojournal.core.presentation.designsystem.buttons.PrimaryButton
 import com.plcoding.echojournal.core.presentation.designsystem.buttons.SecondaryButton
 import com.plcoding.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
+import com.plcoding.echojournal.echos.presentation.components.MoodSelectorRow
 import com.plcoding.echojournal.echos.presentation.models.MoodUi
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,22 +60,12 @@ fun SelectMoodSheet(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            Row(
+            MoodSelectorRow(
+                selectedMood = selectedMood,
+                onMoodClick = onMoodClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                allMoods.forEach { mood ->
-                    MoodItem(
-                        selected = mood == selectedMood,
-                        mood = mood,
-                        onClick = {
-                            onMoodClick(mood)
-                        }
-                    )
-                }
-            }
+            )
 
             Row(
                 modifier = Modifier
@@ -100,47 +91,6 @@ fun SelectMoodSheet(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun MoodItem(
-    selected: Boolean,
-    mood: MoodUi,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .width(64.dp)
-            .clickable(
-                indication = null,
-                interactionSource = null,
-                onClick = onClick
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Image(
-            imageVector = if (selected) {
-                ImageVector.vectorResource(mood.iconSet.fill)
-            } else {
-                ImageVector.vectorResource(mood.iconSet.outline)
-            },
-            contentDescription = mood.title.asString(),
-            modifier = Modifier
-                .height(40.dp),
-            contentScale = ContentScale.FillHeight
-        )
-        Text(
-            text = mood.title.asString(),
-            style = MaterialTheme.typography.labelMedium,
-            color = if (selected) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.outline
-            }
-        )
     }
 }
 

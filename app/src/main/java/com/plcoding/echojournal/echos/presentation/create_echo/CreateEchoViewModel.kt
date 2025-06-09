@@ -121,9 +121,14 @@ class CreateEchoViewModel(
             .observeDefaultMood()
             .take(1)
             .onEach { defaultMood ->
-                _state.update { it.copy(
-                    selectedMood = MoodUi.valueOf(defaultMood.name)
-                ) }
+                val moodUi = MoodUi.valueOf(defaultMood.name)
+                _state.update {
+                    it.copy(
+                        selectedMood = moodUi,
+                        mood = moodUi,
+                        showMoodSelector = false
+                    )
+                }
             }
             .launchIn(viewModelScope)
 
@@ -131,9 +136,11 @@ class CreateEchoViewModel(
             .observeDefaultTopics()
             .take(1)
             .onEach { defaultTopics ->
-                _state.update { it.copy(
-                    topics = defaultTopics
-                ) }
+                _state.update {
+                    it.copy(
+                        topics = defaultTopics
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }
