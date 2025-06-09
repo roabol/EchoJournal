@@ -6,17 +6,25 @@ import com.plcoding.echojournal.R
 import com.plcoding.echojournal.core.presentation.designsystem.dropdowns.Selectable
 import com.plcoding.echojournal.core.presentation.util.UiText
 import com.plcoding.echojournal.echos.domain.audio.AudioPlayer
+import com.plcoding.echojournal.echos.domain.echo.EchoDataSource
 import com.plcoding.echojournal.echos.domain.recording.VoiceRecorder
 import com.plcoding.echojournal.echos.presentation.echos.models.AudioCaptureMethod
 import com.plcoding.echojournal.echos.presentation.echos.models.EchoFilterChip
 import com.plcoding.echojournal.echos.presentation.echos.models.MoodChipContent
+import com.plcoding.echojournal.echos.presentation.echos.models.PlaybackState
 import com.plcoding.echojournal.echos.presentation.echos.models.RecordingState
+import com.plcoding.echojournal.echos.presentation.echos.models.TrackSizeInfo
+import com.plcoding.echojournal.echos.presentation.models.EchoUi
 import com.plcoding.echojournal.echos.presentation.models.MoodUi
+import com.plcoding.echojournal.echos.presentation.util.AmplitudeNormalizer
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -25,12 +33,16 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class EchosViewModel(
     private val voiceRecorder: VoiceRecorder,
-    private val audioPlayer: AudioPlayer
+    private val audioPlayer: AudioPlayer,
+    private val echoDataSource: EchoDataSource
 ) : ViewModel() {
 
     companion object {
@@ -42,6 +54,7 @@ class EchosViewModel(
     private val playingEchoId = MutableStateFlow<Int?>(null)
     private val selectedMoodFilters = MutableStateFlow<List<MoodUi>>(emptyList())
     private val selectedTopicFilters = MutableStateFlow<List<String>>(emptyList())
+    private val audioTrackSizeInfo = MutableStateFlow<TrackSizeInfo?>(null)
 
     private val eventChannel = Channel<EchosEvent>()
     val events = eventChannel.receiveAsFlow()
@@ -51,6 +64,7 @@ class EchosViewModel(
         .onStart {
             if (!hasLoadedInitialData) {
                 observeFilters()
+                observeEchos()
                 hasLoadedInitialData = true
             }
         }
@@ -59,6 +73,32 @@ class EchosViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = EchosState()
         )
+
+    private val echos = echoDataSource
+        .observeEchos()
+        .onEach { echos ->
+            _state.update {
+                it.copy(
+                    hasEchosRecorded = echos.isNotEmpty(),
+                    isLoadingData = false
+                )
+            }
+        }
+        .combine(audioTrackSizeInfo) { echos, trackSizeInfo ->
+            if (trackSizeInfo != null) {
+                echos.map { echo ->
+                    echo.copy(
+                        audioAmplitudes = AmplitudeNormalizer.normalize(
+                            sourceAmplitudes = echo.audioAmplitudes,
+                            trackWidth = trackSizeInfo.trackWidth,
+                            barWidth = trackSizeInfo.barWidth,
+                            spacing = trackSizeInfo.spacing
+                        )
+                    )
+                }
+            } else echos
+        }
+        .flowOn(Dispatchers.Default)
 
     fun onAction(action: EchosAction) {
         when (action) {
@@ -127,7 +167,9 @@ class EchosViewModel(
             }
 
             is EchosAction.OnPlayEchoClick -> onPlayEchoClick(action.echoId)
-            is EchosAction.OnTrackSizeAvailable -> {}
+            is EchosAction.OnTrackSizeAvailable -> {
+                audioTrackSizeInfo.update { action.trackSizeInfo }
+            }
 
             is EchosAction.OnAudioPermissionGranted -> {
                 startRecording(captureMethod = AudioCaptureMethod.STANDARD)
@@ -143,6 +185,41 @@ class EchosViewModel(
 
             EchosAction.OnResumeRecordingClick -> resumeRecording()
         }
+    }
+
+    private fun observeEchos() {
+        combine(
+            echos,
+            playingEchoId,
+            audioPlayer.activeTrack
+        ) { echos, playingEchoId, activeTrack ->
+            if (playingEchoId == null || activeTrack == null) {
+                return@combine echos.map { it.toEchoUi() }
+            }
+
+            echos.map { echo ->
+                if (echo.id == playingEchoId) {
+                    echo.toEchoUi(
+                        currentPlaybackDuration = activeTrack.durationPlayed,
+                        playbackState = if (activeTrack.isPlaying) {
+                            PlaybackState.PLAYING
+                        } else {
+                            PlaybackState.PAUSED
+                        }
+                    )
+                } else echo.toEchoUi()
+            }
+        }
+            .groupByRelativeDate()
+            .onEach { groupedEchos ->
+                _state.update {
+                    it.copy(
+                        echos = groupedEchos
+                    )
+                }
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
     }
 
     private fun onPlayEchoClick(echoId: Int) {
@@ -161,6 +238,7 @@ class EchosViewModel(
                     onComplete = ::completePlayback
                 )
             }
+
             else -> audioPlayer.resume()
         }
     }
@@ -348,6 +426,31 @@ class EchosViewModel(
                     )
                 )
             }
+        }
+    }
+
+    private fun Flow<List<EchoUi>>.groupByRelativeDate(): Flow<Map<UiText, List<EchoUi>>> {
+        val formatter = DateTimeFormatter.ofPattern("dd MMM")
+        val today = LocalDate.now()
+        return map { echos ->
+            echos
+                .groupBy { echo ->
+                    LocalDate.ofInstant(
+                        echo.recordedAt,
+                        ZoneId.systemDefault()
+                    )
+                }
+                .mapValues { (_, echos) ->
+                    echos.sortedByDescending { it.recordedAt }
+                }
+                .toSortedMap(compareByDescending { it })
+                .mapKeys { (date, _) ->
+                    when (date) {
+                        today -> UiText.StringResource(R.string.today)
+                        today.minusDays(1) -> UiText.StringResource(R.string.yesterday)
+                        else -> UiText.Dynamic(date.format(formatter))
+                    }
+                }
         }
     }
 }

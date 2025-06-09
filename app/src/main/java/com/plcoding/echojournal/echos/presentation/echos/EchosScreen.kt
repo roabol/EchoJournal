@@ -172,7 +172,7 @@ fun EchosScreen(
 
                 else -> {
                     EchoList(
-                        state.echoDaySectionsList,
+                        state.echoDaySections,
                         onPlayClick = {
                             onAction(EchosAction.OnPlayEchoClick(it))
                         },
