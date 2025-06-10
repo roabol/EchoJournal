@@ -37,15 +37,14 @@ fun MoodCard(
         )
         Text(
             text = stringResource(R.string.select_default_mood_to_apply_to_all_new_entries),
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(16.dp))
         MoodSelectorRow(
             selectedMood = selectedMood,
             onMoodClick = onMoodClick,
-            modifier = modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
