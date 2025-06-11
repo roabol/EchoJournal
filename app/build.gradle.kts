@@ -15,8 +15,8 @@ android {
         applicationId = "br.com.sigmaonline.echojournal"
         minSdk = 24
         targetSdk = 35
-        versionCode = 4
-        versionName = "2025.06.11"
+        versionCode = 5
+        versionName = "2025.06.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
