@@ -8,15 +8,15 @@ plugins {
 }
 
 android {
-    namespace = "com.plcoding.echojournal"
+    namespace = "br.com.sigmaonline.echojournal"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.plcoding.echojournal"
+        applicationId = "br.com.sigmaonline.echojournal"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "2025.06.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
